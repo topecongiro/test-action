@@ -7,7 +7,6 @@ on:
 jobs:
   build-release:
     name: build-release
-    needs: ['create-release']
     strategy:
       matrix:
         platform: [ubuntu-latest, windows-latest, macos-latest]
