@@ -75,7 +75,6 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          outdir="$(ci/cargo-out-dir ./target)"
           staging="test-action-${{ github.ref }}-${{ matrix.target }}"
           mkdir -p "$staging"/{complete,doc}
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
