@@ -1,0 +1,55 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+      - name: Install cargo-make
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: cargo-make
+      - name: Build release binaries
+        uses: actions-rs/cargo@v1
+        with:
+          command: make
+          args: release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release ${{ github.ref }}
+          draft: false
+          prelease: false
+      - name: Upload Release Asset v1
+        id: upload_release_asset_v1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/release/test-action
+      - name: Upload Release Asset v2
+        id: upload_release_asset_v2
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/release/test-action-v2
