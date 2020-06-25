@@ -9,7 +9,9 @@ name: Create Release
 jobs:
   build:
     name: Create Release
-    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+    strategy:
+      os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
