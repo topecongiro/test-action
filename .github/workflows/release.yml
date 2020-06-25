@@ -72,13 +72,18 @@ jobs:
           command: build
           args: --release
 
+      - name: Get the release version from the tag
+        run: |
+          echo "::set-env name=TEST_ACTION_VERSION::${GITHUB_REF#refs/tags/}"
+          echo "version is ${{ env.TEST_ACTION_VERSION }}"
+
       - name: Build archive
         shell: bash
         run: |
-          staging="test-action-${{ github.ref }}-${{ matrix.target }}"
-          mkdir -p "$staging"/{complete,doc}
+          staging="test-action-${{ env.TEST_ACTION_VERSION }}"
+          mkdir -p "$staging"
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
-            cp "target/release/*.exe" "$staging/"
+            cp "target/release/test-action.exe" "$staging/"
             7z a "$staging.zip" "$staging"
             echo "::set-env name=ASSET::$staging.zip"
           else
@@ -86,7 +91,6 @@ jobs:
             tar czf "$staging.tar.gz" "$staging"
             echo "::set-env name=ASSET::$staging.tar.gz"
           fi
-
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
