@@ -73,14 +73,12 @@ jobs:
           args: --release
 
       - name: Get the release version from the tag
-        run: |
-          echo "::set-env name=TEST_ACTION_VERSION::${GITHUB_REF#refs/tags/}"
-          echo "version is ${{ env.TEST_ACTION_VERSION }}"
+        run: echo ${{ github.event.release.tag_name }}
 
       - name: Build archive
         shell: bash
         run: |
-          staging="test-action-${{ env.TEST_ACTION_VERSION }}"
+          staging="test-action-${{ matrix.platform }}-${{ github.event.release.tag_name }}"
           mkdir -p "$staging"
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
             cp "target/release/test-action.exe" "$staging/"
