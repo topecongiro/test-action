@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, windows-latest, macos-latest]
+        binary: [test-action, test-action-v2]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -41,19 +42,12 @@ jobs:
             Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset v1
-        id: upload_release_asset_v1
+      - name: Upload Release Asset ${{ matrix.binary }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/release/test-action
-      - name: Upload Release Asset v2
-        id: upload_release_asset_v2
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/release/test-action-v2
+          asset_path: ./target/release/${{ matrix.binary }}
+          asset_name: ${{ matrix.binary }}
+          asset_content_type: application/octet-stream
