@@ -3,7 +3,7 @@ name: upload
 on:
   release:
     types:
-      - created
+      - [created]
 
 jobs:
   build-release:
