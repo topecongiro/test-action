@@ -9,7 +9,20 @@ jobs:
     name: build-release
     strategy:
       matrix:
-        platform: [ubuntu-latest, windows-latest, macos-latest]
+        build: [linux, macos, windows-gnu, windows-msvc]
+        include:
+          - build: linux
+            os: ubuntu-latest
+            rust: nightly
+          - build: macos
+            os: macos-latest
+            rust: nightly
+          - build: windows-gnu
+            os: windows-latest
+            rust: nightly-x86_64-gnu
+          - build: windows-msvc
+            os: windows-latest
+            rust: nightly-x86_64-msvc
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
@@ -18,7 +31,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: ${{ matrix.rust }}
           override: true
 
       - name: Build release binaries
@@ -30,9 +43,9 @@ jobs:
       - name: Build archive
         shell: bash
         run: |
-          staging="test-action-${{ matrix.platform }}-${{ github.event.release.tag_name }}"
+          staging="test-action_${{ matrix.build }}_${{ github.event.release.tag_name }}"
           mkdir -p "$staging"
-          if [ "${{ matrix.platform }}" = "windows-latest" ]; then
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp "target/release/test-action.exe" "$staging/"
             7z a "$staging.zip" "$staging"
             echo "::set-env name=ASSET::$staging.zip"
