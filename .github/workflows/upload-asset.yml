@@ -23,7 +23,7 @@ jobs:
           - build: windows-msvc
             os: windows-latest
             rust: nightly-x86_64-msvc
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
